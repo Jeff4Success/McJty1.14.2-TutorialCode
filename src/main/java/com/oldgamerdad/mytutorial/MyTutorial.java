@@ -1,6 +1,8 @@
 package com.oldgamerdad.mytutorial;
 
 import com.oldgamerdad.mytutorial.blocks.FirstBlock;
+import com.oldgamerdad.mytutorial.blocks.FirstBlockContainer;
+import com.oldgamerdad.mytutorial.blocks.FirstBlockTile;
 import com.oldgamerdad.mytutorial.blocks.ModBlocks;
 import com.oldgamerdad.mytutorial.items.FirstItem;
 import com.oldgamerdad.mytutorial.setup.ClientProxy;
@@ -9,9 +11,13 @@ import com.oldgamerdad.mytutorial.setup.ModSetup;
 import com.oldgamerdad.mytutorial.setup.ServerProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -66,5 +72,21 @@ public class MyTutorial {
             event.getRegistry().register(new BlockItem(ModBlocks.FIRSTBLOCK, properties).setRegistryName("firstblock"));
             event.getRegistry().register(new FirstItem());
         }
+
+        @SubscribeEvent
+        public static void onTileEntityRegistry(final RegistryEvent.Register<TileEntityType<?>> event) {
+
+            event.getRegistry().register(TileEntityType.Builder.create(FirstBlockTile::new, ModBlocks.FIRSTBLOCK).build(null).setRegistryName("firstblock"));
+
+        }
+
+        @SubscribeEvent
+        public static void onContainerRegistry(final RegistryEvent.Register<ContainerType<?>> event) {
+            event.getRegistry().register(IForgeContainerType.create((windowId, inv, data) -> {
+                BlockPos pos = data.readBlockPos();
+                return new FirstBlockContainer(windowId, MyTutorial.proxy.getClientWorld(), pos, inv, MyTutorial.proxy.getClientPlayer());
+            }).setRegistryName("firstblock"));
+        }
+
     }
 }
